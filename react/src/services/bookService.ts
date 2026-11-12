@@ -17,5 +17,19 @@ export const bookService = {
       throw new Error("failed to fetch books");
     }
     return await response.json();
+  },
+  async searchBooksByTitle(title: string, pageNo: number, pageSize: number): Promise<BookResponse> {
+    const response = await fetch(`${baseUrl}/books/search/title?title=${title}&pageNo=${pageNo}&pageSize=${pageSize}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch book titles");
+    }
+    return await response.json()
+  },
+  async searchBooksByCategory(category: string, pageNo: number, pageSize: number): Promise<BookResponse> {
+    const response = await fetch(`${baseUrl}/books/search/category?category=${category}&pageNo=${pageNo}&pageSize=${pageSize}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch books by categories");
+    }
+    return await response.json();
   }
 }

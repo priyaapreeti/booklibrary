@@ -30,6 +30,11 @@ public class BookController {
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(defaultValue = "5") int pageSize) {
         return bookService.findByTitleContaining(title, pageNo, pageSize);
-
+    }
+    @ResponseStatus(HttpStatus.OK) @GetMapping("/search/category")
+    public Page<Book> findByCategory(@RequestParam String category,
+                                     @RequestParam(defaultValue = "0") int pageNo,
+                                     @RequestParam(defaultValue = "5") int pageSize){
+        return bookService.findByCategory(category, pageNo, pageSize);
     }
 }

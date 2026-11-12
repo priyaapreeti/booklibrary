@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { BookModel } from "../../models/BookModel";
 import { SearchBook } from "./components/SearchBook";
 import { bookService } from "../../services/bookService";
@@ -6,20 +6,46 @@ import { SpinnerLoading } from "../../components/SpinnerLoading";
 import { Pagination } from "./components/Pagination";
 
 export const SearchBooksPage = () => {
-  const books_per_page = 5;
+  const BOOKS_PER_PAGE = 5;
+  const CATEGORIES = [
+    { label: "All", value: "All" },
+    { label: "Front End", value: "FE" },
+    { label: "Back End", value: "BE" },
+    { label: "Data", value: "Data" },
+    { label: "Devops", value: "Devops" },
+  ];
   const [books, setBooks] = useState<BookModel[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  console.log(totalPages);
+
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         const pageNo = currentPage - 1;
-        const data = await bookService.getbooks(pageNo, books_per_page);
+        let data;
+        if (searchTerm) {
+          data = await bookService.searchBooksByTitle(
+            searchTerm,
+            pageNo,
+            BOOKS_PER_PAGE,
+          );
+        } else if (selectedCategory !== "All") {
+          data = await bookService.searchBooksByCategory(
+            selectedCategory,
+            pageNo,
+            BOOKS_PER_PAGE,
+          );
+        } else {
+          data = await bookService.getbooks(pageNo, BOOKS_PER_PAGE);
+        }
         setBooks(data.content);
         setTotalBooks(data.page.totalElements);
         setTotalPages(data.page.totalPages);
@@ -31,11 +57,34 @@ export const SearchBooksPage = () => {
       }
     };
     fetchBooks();
-  }, [currentPage]);
+  }, [currentPage, searchTerm, selectedCategory]);
+
+  const handleSearch = useCallback(() => {
+    setCurrentPage(1);
+    setSearchTerm(searchInput);
+    setSelectedCategory("All");
+  }, [setCurrentPage, searchInput]);
+
+  const handleInputKeydown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key == "Enter") handleSearch();
+    },
+    [handleSearch],
+  );
+  const handleCategorySelect = useCallback(
+    (value: string) => {
+      setCurrentPage(1);
+      setSelectedCategory(value);
+      setSearchInput("");
+      setSearchTerm("");
+    },
+    [setCurrentPage],
+  );
+
   if (isLoading) return <SpinnerLoading />;
   if (httpError) return <div>{httpError}</div>;
-  const indexOfFirstBook = (currentPage - 1) * books_per_page + 1;
-  const lastItem = Math.min(currentPage * books_per_page, totalBooks);
+  const indexOfFirstBook = (currentPage - 1) * BOOKS_PER_PAGE + 1;
+  const lastItem = Math.min(currentPage * BOOKS_PER_PAGE, totalBooks);
   return (
     <>
       <div className="container">
@@ -48,8 +97,16 @@ export const SearchBooksPage = () => {
                   type="search"
                   placeholder="Search"
                   aria-labelledby="Search"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleInputKeydown}
                 />
-                <button className="btn btn-outline-success">Search</button>
+                <button
+                  className="btn btn-outline-success"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
               </div>
             </div>
 
@@ -62,38 +119,22 @@ export const SearchBooksPage = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Category
+                  {selectedCategory}
                 </button>
-
                 <ul
                   className="dropdown-menu"
                   aria-labelledby="dropdownMenuButton1"
                 >
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      All
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Front End
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Back End
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      Data
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="#">
-                      DevOps
-                    </a>
-                  </li>
+                  {CATEGORIES.map((cat: any, idx: number) => (
+                    <li
+                      key={cat.value}
+                      onClick={() => handleCategorySelect(cat.value)}
+                    >
+                      <a className="dropdown-item" href="#">
+                        {cat.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
