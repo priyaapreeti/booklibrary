@@ -12,14 +12,24 @@ import java.util.List;
 @RequestMapping("/api/books")
 public class BookController {
     private final BookService bookService;
-    public BookController(BookService bookService){
-        this.bookService= bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<Book> getAllBooks(@RequestParam(defaultValue = "0") int pageNo,
-                                  @RequestParam(defaultValue = "5") int pageSize){
+            @RequestParam(defaultValue = "5") int pageSize) {
         return bookService.getAllBooks(pageNo, pageSize);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/search/title")
+    public Page<Book> findByTitleContaining(@RequestParam String title,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "5") int pageSize) {
+        return bookService.findByTitleContaining(title, pageNo, pageSize);
+
+    }
 }

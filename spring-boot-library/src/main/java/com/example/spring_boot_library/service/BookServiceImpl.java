@@ -8,17 +8,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
+
     public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository=bookRepository;
+        this.bookRepository = bookRepository;
     }
-    @Override @Transactional(readOnly = true)
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<Book> getAllBooks(int pageNo, int pageSize) {
-        Pageable pageable= PageRequest.of(pageNo, pageSize);
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
         return bookRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Book> findByTitleContaining(String title, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        return bookRepository.findByTitleContaining(title, pageable);
     }
 }
