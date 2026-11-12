@@ -1,3 +1,4 @@
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Homepage from "./layouts/home-page/Homepage";
 import { Footer } from "./layouts/navigation-bars/Footer";
@@ -7,8 +8,10 @@ function App() {
   return (
     <>
       <NavigationBar />
-      {/* <Homepage/> */}
-      <SearchBooksPage />
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/search" element={<SearchBooksPage />} />
+      </Routes>
       <Footer />
     </>
   );
