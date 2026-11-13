@@ -4,7 +4,7 @@ export interface BookModel {
     author?: string;
     description?: string;
     copies?: number;
-    copesAvailable?: number;
+    copiesAvailable?: number;
     category?: string;
     img?: string;
 }

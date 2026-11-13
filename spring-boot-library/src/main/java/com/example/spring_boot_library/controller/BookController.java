@@ -37,4 +37,8 @@ public class BookController {
                                      @RequestParam(defaultValue = "5") int pageSize){
         return bookService.findByCategory(category, pageNo, pageSize);
     }
+    @GetMapping("/{id}") @ResponseStatus(HttpStatus.OK)
+    public Book getBookById(@PathVariable Long id){
+        return bookService.getBookById(id);
+    }
 }

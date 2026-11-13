@@ -36,4 +36,10 @@ public class BookServiceImpl implements BookService {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         return bookRepository.findByCategory(category, pageable);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id).orElse(null);
+    }
 }
