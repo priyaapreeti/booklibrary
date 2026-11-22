@@ -1,5 +1,6 @@
-import type { BookModel } from "../../models/BookModel";
+
 import { Link } from "react-router-dom";
+import type { BookModel } from "../../../models/BookModel";
 
 export const CheckoutBox: React.FC<{ book: BookModel }> = (props) => {
   const isAvailable = (props.book?.copiesAvailable ?? 0) > 0;

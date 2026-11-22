@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { bookService } from "../../services/bookService";
 import { SpinnerLoading } from "../../components/SpinnerLoading";
 import type { BookModel } from "../../models/BookModel";
-import { CheckoutBox } from "./CheckoutBox";
+import { CheckoutBox } from "./components/CheckoutBox";
+import type { ReviewModel } from "../../models/ReviewModel";
+import { LatestReviews } from "./components/LatestReviews";
+
 
 export const BookCheckoutPage = () => {
   const bookId = window.location.pathname.split("/")[2];
+  const [reviews, setReviews] = useState<ReviewModel[]>([]);
+
   const [book, setBook] = useState<BookModel>();
   const [isloading, setIsLoading] = useState(false);
   const [httpError, setHttpError] = useState<string | null>(null);
@@ -13,9 +18,10 @@ export const BookCheckoutPage = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const responseJson = await bookService.getBookById(bookId);
+        const [bookData, reviewsData] = await Promise.all([bookService.getBookById(bookId), bookService.getGetBookReviewsById(bookId)]);
+        setBook(bookData);
+        setReviews(reviewsData.content);
         setIsLoading(false);
-        setBook(responseJson);
       } catch (error) {
         setHttpError(error instanceof Error ? error.message : "");
       }
@@ -42,6 +48,7 @@ export const BookCheckoutPage = () => {
           <CheckoutBox book={book!} />
         </div>
         <hr />
+        <LatestReviews reviews={reviews} bookId={book?.id}/>
       </div>
       {/* Mobile View */}
       <div className="container d-lg-none mt-5">
@@ -57,6 +64,7 @@ export const BookCheckoutPage = () => {
           <CheckoutBox book={book!} />
         </div>
         <hr />
+        <LatestReviews reviews={reviews} bookId={book?.id}/>
       </div>
     </>
   );

@@ -3,7 +3,7 @@ import type { BookModel } from "../../models/BookModel";
 import { SearchBook } from "./components/SearchBook";
 import { bookService } from "../../services/bookService";
 import { SpinnerLoading } from "../../components/SpinnerLoading";
-import { Pagination } from "./components/Pagination";
+import { Pagination } from "../../components/Pagination";
 
 export const SearchBooksPage = () => {
   const BOOKS_PER_PAGE = 5;
