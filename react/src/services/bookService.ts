@@ -48,8 +48,8 @@ export const bookService = {
     }
     return response.json()
   },
-  async getGetBookReviewsById(bookId: string): Promise<ReviewResponse> {
-    const response = await fetch(`${baseUrl}/reviews/book/${bookId}`);
+  async getGetBookReviewsById(bookId: string, pageNo: number = 0, pageSize: number = 3): Promise<ReviewResponse> {
+    const response = await fetch(`${baseUrl}/reviews/book/${bookId}?pageNo=${pageNo}&pageSize=${pageSize }`);
     if (!response.ok) {
       throw new Error('Failed to fetch book reviews');
     }
